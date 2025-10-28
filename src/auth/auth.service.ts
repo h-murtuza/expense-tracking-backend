@@ -105,6 +105,24 @@ export class AuthService {
     return user;
   }
 
+  async getAllUsers() {
+    const users = await this.userModel
+      .find()
+      .select('-password')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return users.map((user) => ({
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: (user as any).createdAt,
+    }));
+  }
+
   private generateToken(user: UserDocument): string {
     const payload = {
       sub: user._id.toString(),
